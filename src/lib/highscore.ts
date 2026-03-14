@@ -1,4 +1,4 @@
-const STORAGE_KEY = 'cat-walk-typing-highscore'
+const STORAGE_KEY = 'nekohara-typing-highscore'
 
 export function getHighScore(): number {
   try {

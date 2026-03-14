@@ -1,13 +1,6 @@
 import { useRef, useCallback } from 'react'
 
-// Web Audio APIで猫の鳴き声風のSEを合成生成する
-// 外部音声ファイル不要
-
-function createMeowSound(
-  ctx: AudioContext,
-  frequency: number,
-  duration: number,
-): void {
+function createMeowSound(ctx: AudioContext, frequency: number, duration: number): void {
   const oscillator = ctx.createOscillator()
   const gainNode = ctx.createGain()
 
@@ -86,6 +79,48 @@ function createPurrSound(ctx: AudioContext): void {
   lfo.stop(ctx.currentTime + 1.2)
 }
 
+function createTypeClick(ctx: AudioContext): void {
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.type = 'square'
+  osc.frequency.value = 600 + Math.random() * 400
+  gain.gain.setValueAtTime(0.03, ctx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04)
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.start()
+  osc.stop(ctx.currentTime + 0.04)
+}
+
+function createMissSound(ctx: AudioContext): void {
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.type = 'sawtooth'
+  osc.frequency.setValueAtTime(300, ctx.currentTime)
+  osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.15)
+  gain.gain.setValueAtTime(0.08, ctx.currentTime)
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15)
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.start()
+  osc.stop(ctx.currentTime + 0.15)
+}
+
+function createShutdownSound(ctx: AudioContext): void {
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.type = 'sine'
+  osc.frequency.setValueAtTime(440, ctx.currentTime)
+  osc.frequency.exponentialRampToValueAtTime(30, ctx.currentTime + 1.5)
+  gain.gain.setValueAtTime(0.15, ctx.currentTime)
+  gain.gain.linearRampToValueAtTime(0.1, ctx.currentTime + 0.8)
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 1.5)
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.start()
+  osc.stop(ctx.currentTime + 1.5)
+}
+
 const MEOW_FREQUENCIES = [600, 700, 800, 900, 1000, 1100]
 
 export function useSound() {
@@ -101,23 +136,32 @@ export function useSound() {
     return ctxRef.current
   }, [])
 
+  const playType = useCallback(() => {
+    createTypeClick(getContext())
+  }, [getContext])
+
+  const playMiss = useCallback(() => {
+    createMissSound(getContext())
+  }, [getContext])
+
   const playMeow = useCallback(() => {
     const ctx = getContext()
-    const freq =
-      MEOW_FREQUENCIES[Math.floor(Math.random() * MEOW_FREQUENCIES.length)]
+    const freq = MEOW_FREQUENCIES[Math.floor(Math.random() * MEOW_FREQUENCIES.length)]
     const duration = 0.06 + Math.random() * 0.06
     createMeowSound(ctx, freq, duration)
   }, [getContext])
 
   const playHiss = useCallback(() => {
-    const ctx = getContext()
-    createHissSound(ctx)
+    createHissSound(getContext())
   }, [getContext])
 
   const playPurr = useCallback(() => {
-    const ctx = getContext()
-    createPurrSound(ctx)
+    createPurrSound(getContext())
   }, [getContext])
 
-  return { playMeow, playHiss, playPurr }
+  const playShutdown = useCallback(() => {
+    createShutdownSound(getContext())
+  }, [getContext])
+
+  return { playType, playMiss, playMeow, playHiss, playPurr, playShutdown }
 }
