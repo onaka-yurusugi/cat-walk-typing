@@ -1,73 +1,35 @@
-# React + TypeScript + Vite
+# 🐾 黒猫バシバシタイピング
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+猫がキーボードの上を歩いた時に生まれる「謎の文字列」をタイピングするブラウザゲームです。
 
-Currently, two official plugins are available:
+正しいキーを打つたびに、黒猫の手が画面から伸びてきてキーボードをバシバシ叩いてくれます。
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 遊び方
 
-## React Compiler
+1. 「バシバシ始める」ボタンでゲームスタート（制限時間60秒）
+2. 画面に表示される謎の文字列を左から順にタイピング
+3. 正解するとスコア加算 + コンボボーナス + 猫の手バシバシ演出
+4. ミスするとコンボがリセット（減点なし）
+5. 60秒経過でリザルト画面
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 猫歩き文字列のしくみ
 
-## Expanding the ESLint configuration
+単なるランダムではなく、QWERTY配列上を猫が歩く軌跡をシミュレートして生成しています。
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 80%の確率で隣接キーへ移動、20%でその場に留まる
+- 30%の確率で「寝落ちイベント」が発生し、同じキーが15〜39回連続する
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 開発
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev      # 開発サーバー起動
+npm run build    # ビルド
+npm run lint     # ESLint
+npm run preview  # ビルド結果プレビュー
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 技術スタック
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- React 19 + TypeScript + Vite
+- Tailwind CSS v4
